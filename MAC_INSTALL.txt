@@ -1,0 +1,21 @@
+I.R.Sauce — Mac build and installer instructions
+
+This is a BUILD KIT. It does not already contain compiled Mac plug-ins or a .pkg.
+
+1. Unzip the whole folder. Keep all files together.
+2. If Apple Command Line Tools are not installed, run this in Terminal:
+   xcode-select --install
+   Complete Apple's installation.
+3. Open Create_Mac_Installer.command. If it will not open, type bash followed by a space in Terminal, drag Create_Mac_Installer.command into the Terminal window, and press Return.
+4. Wait for the build and tests. The launcher will reveal:
+   dist/IRSauce-0.3.0-Mac-Installer.dmg
+5. Open that DMG, then Install I.R.Sauce.pkg to install the AU and VST3 plug-ins. Your Mac may require administrator approval.
+6. Quit and reopen your DAW; scan for IRSauce.
+
+The target is macOS 11+ on Apple Silicon and Intel. This target has not yet been tested on a Mac.
+
+The package is unsigned, and bundles have only local ad-hoc signatures. It has not been notarized by Apple. Use the ordinary macOS review process if it is blocked. Do not disable Gatekeeper.
+
+If anything fails, keep dist/mac-build.log. That log identifies the build failure.
+
+For a ready-made package downloaded from this chat, a Mac build runner is still needed. The supplied GitHub workflow can build the package after this kit is uploaded to its own repository.

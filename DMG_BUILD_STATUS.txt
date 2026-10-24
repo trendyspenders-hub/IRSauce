@@ -1,0 +1,22 @@
+I.R.Sauce DMG packaging status
+
+A ready-to-install DMG has NOT been created in this Linux session.
+Compiled Mac binaries and a Mac build runner are not available.
+
+The kit now creates a real DMG on macOS:
+1. Open Create_Mac_Installer.command on the Mac.
+2. It compiles Intel + Apple Silicon binaries and runs the tests.
+3. It verifies the architecture and local signatures of the binaries.
+4. It builds a .pkg containing AU and VST3 plug-in executables.
+5. It checks that both plug-in executables are listed in the package payload.
+6. It creates a compressed DMG, runs hdiutil verify, and writes a SHA-256 checksum.
+
+Result after a successful Mac run:
+dist/IRSauce-0.3.0-Mac-Installer.dmg
+
+The DMG contains Install I.R.Sauce.pkg, instructions, a preview and license.
+It is not Developer ID signed or Apple notarized.
+
+Shell syntax checks passed here; Apple's binary, package and DMG tools could not run on Linux.
+The GitHub workflow includes this packaging sequence but has not run.
+A dedicated I.R.Sauce GitHub repository is needed to run the Mac workflow from here.

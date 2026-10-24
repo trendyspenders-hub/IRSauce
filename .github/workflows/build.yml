@@ -1,0 +1,44 @@
+name: Build and package I.R.Sauce
+on:
+  push:
+    paths-ignore: ['Docs/**', 'Preview/**', '**/*.md', '**/*.txt', 'LICENSE', 'licenses/**']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mac:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure universal binary
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release '-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64' -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0
+      - name: Compile
+        run: cmake --build build --config Release --parallel 2
+      - name: Test
+        run: ctest --test-dir build -C Release --output-on-failure
+      - name: Package Mac installer
+        run: bash scripts/package-mac.sh "$PWD/build"
+      - name: Create verified DMG
+        run: bash scripts/create-dmg.sh
+      - name: Validate Audio Unit
+        run: |
+          mkdir -p "$HOME/Library/Audio/Plug-Ins/Components"
+          ditto "build/IRSauce_artefacts/Release/AU/IRSauce.component" "$HOME/Library/Audio/Plug-Ins/Components/IRSauce.component"
+          codesign --force --deep --sign - "$HOME/Library/Audio/Plug-Ins/Components/IRSauce.component"
+          auval -v aufx IrSc IrAu > dist/auval.log 2>&1 || { cat dist/auval.log; exit 1; }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IRSauce-Mac-Installer-unsigned
+          path: dist/
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cmake -S . -B build -A x64
+      - run: cmake --build build --config Release --parallel 2
+      - run: ctest --test-dir build -C Release --output-on-failure
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IRSauce-Windows-VST3
+          path: build/IRSauce_artefacts/Release/
