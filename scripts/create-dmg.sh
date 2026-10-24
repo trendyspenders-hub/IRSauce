@@ -2,7 +2,7 @@
 # Wrap a successfully built installer package in a verified, compressed disk image.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-VERSION=0.3.0
+VERSION=0.4.0
 DIST="$ROOT/dist"
 PACKAGE="${1:-$DIST/IRSauce-$VERSION-unsigned.pkg}"
 DMG="$DIST/IRSauce-$VERSION-Mac-Installer.dmg"

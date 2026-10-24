@@ -27,6 +27,6 @@ CTEST="$(dirname "$CMAKE")/ctest"
 "$CTEST" --test-dir "$ROOT/build-mac" --output-on-failure -C Release
 /bin/bash "$ROOT/scripts/package-mac.sh" "$ROOT/build-mac"
 /bin/bash "$ROOT/scripts/create-dmg.sh"
-/usr/bin/open -R "$ROOT/dist/IRSauce-0.3.0-Mac-Installer.dmg"
+/usr/bin/open -R "$ROOT/dist/IRSauce-0.4.0-Mac-Installer.dmg"
 echo 'Done. Open the DMG, then Install I.R.Sauce.pkg to install AU and VST3 plug-ins.'
 read -r -p 'Press Return to close. ' _

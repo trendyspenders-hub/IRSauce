@@ -2,7 +2,7 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 BUILD_DIR="${1:-$ROOT/build-mac}"
-VERSION="0.3.0"
+VERSION="0.4.0"
 DIST="$ROOT/dist"
 STAGE="$(mktemp -d "${TMPDIR:-/tmp}/irsauce-pkg.XXXXXX")"
 trap 'rm -rf "$STAGE"' EXIT

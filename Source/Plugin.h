@@ -5,7 +5,8 @@
 class SauceProcessor final: public juce::AudioProcessor {
 public:
  juce::AudioProcessorValueTreeState state;
- std::atomic<float> outputPeak{0},gainReduction{0};
+ std::atomic<float> outputPeak{0},gainReduction{0},inputPeak{0};
+ std::atomic<std::uint32_t> transientSerial{0};
  SauceProcessor();
  static juce::AudioProcessorValueTreeState::ParameterLayout layout();
  float value(const char* id)const{return state.getRawParameterValue(id)->load();}
@@ -27,7 +28,10 @@ private:
  juce::AudioBuffer<float> shifted,pitchInput,rawAligned,wetAligned;
  std::vector<float> delay[4];size_t write=0;int latency=0;bool firstBlock=true;
  sauce::Smoother inputGain,pitch,layer,globalMix,outputGain,bypass,limiterOn;
- float limiterGain=1; double sampleRate=48000;
+ float limiterGain=1,visualFast=0,visualSlow=0;int visualCooldown=0;double sampleRate=48000;
  void process(juce::AudioBuffer<float>&,bool hostBypass);
  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SauceProcessor)
 };
+
+// Offline preview/test hook; runs only on the message thread.
+void advanceSauceEditorVisuals(juce::AudioProcessorEditor&,float seconds,bool recipeChange=false);

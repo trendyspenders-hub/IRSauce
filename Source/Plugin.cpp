@@ -18,17 +18,21 @@ bool SauceProcessor::isBusesLayoutSupported(const BusesLayout& b)const{return b.
 void SauceProcessor::prepareToPlay(double rate,int block){sampleRate=rate;core.prepare(rate);stretch.presetDefault(2,rate);latency=stretch.inputLatency()+stretch.outputLatency();setLatencySamples(latency);
  int size=std::max(64,block);for(auto* b:{&shifted,&pitchInput,&rawAligned,&wetAligned})b->setSize(2,size);for(auto& d:delay)d.assign(latency+1,0);
  for(auto* s:{&inputGain,&pitch,&layer,&globalMix,&outputGain,&bypass,&limiterOn})s->prepare(rate);reset();}
-void SauceProcessor::reset(){core.reset();stretch.reset();for(auto& d:delay)std::fill(d.begin(),d.end(),0);write=0;limiterGain=1;firstBlock=true;outputPeak=0;gainReduction=0;}
+void SauceProcessor::reset(){core.reset();stretch.reset();for(auto& d:delay)std::fill(d.begin(),d.end(),0);write=0;limiterGain=1;firstBlock=true;outputPeak=0;gainReduction=0;inputPeak=0;transientSerial=0;visualFast=visualSlow=0;visualCooldown=0;}
 void SauceProcessor::processBlock(AudioBuffer<float>& b,MidiBuffer&){process(b,false);}
 void SauceProcessor::processBlockBypassed(AudioBuffer<float>& b,MidiBuffer&){process(b,true);}
 void SauceProcessor::process(AudioBuffer<float>& b,bool hostBypass){ScopedNoDenormals no;auto count=b.getNumSamples();if(count==0)return;if(delay[0].empty()||b.getNumChannels()<2){b.clear();return;}
  inputGain.set(sauce::gain(value("trim")*(value("prepOn")>.5f)));pitch.set(value("pitch"));layer.set(value("stackOn")>.5f?value("double"):0);globalMix.set(value("mix"));outputGain.set(sauce::gain(value("output")));bypass.set(hostBypass||value("bypass")>.5f?1.f:0.f);limiterOn.set(value("limiter"));
  if(firstBlock){for(auto* s:{&inputGain,&pitch,&layer,&globalMix,&outputGain,&bypass,&limiterOn})s->snap(s->target);firstBlock=false;}
  sauce::Settings settings;settings.low=value("low");settings.mid=value("mid");settings.high=value("high");settings.drive=value("drive");settings.compression=value("compression");settings.threshold=value("threshold");settings.attack=value("attack");settings.release=value("release");settings.makeup=value("makeup");settings.room=value("room");settings.damping=value("damping");settings.space=value("space");settings.rub=value("rubOn")>.5f;settings.fire=value("fireOn")>.5f;settings.pit=value("pitOn")>.5f;settings.smoke=value("smokeOn")>.5f;
- float peak=0;const float recovery=std::exp(-1.f/(float(sampleRate)*.1f));
+ float peak=0;const float visualRelease=std::exp(-1.f/(float(sampleRate)*.08f)),visualAverage=std::exp(-1.f/(float(sampleRate)*.15f));const float recovery=std::exp(-1.f/(float(sampleRate)*.1f));
  // Chunking bounds pitch updates and permits hosts to exceed their advertised block size.
  for(int offset=0;offset<count;offset+=64){int n=std::min(64,count-offset);float* ptr[]={b.getWritePointer(0,offset),b.getWritePointer(1,offset)};float* in[]={pitchInput.getWritePointer(0),pitchInput.getWritePointer(1)};float* shiftedOut[]={shifted.getWritePointer(0),shifted.getWritePointer(1)};
-  for(int i=0;i<n;i++){float trim=inputGain.next();auto read=(write+1)%delay[0].size();for(int c=0;c<2;c++){float raw=std::isfinite(ptr[c][i])?ptr[c][i]:0;in[c][i]=raw*trim;rawAligned.setSample(c,i,delay[c][read]);wetAligned.setSample(c,i,delay[c+2][read]);delay[c][write]=raw;delay[c+2][write]=in[c][i];}write=read;}
+  for(int i=0;i<n;i++){float trim=inputGain.next(),inputMagnitude=0;auto read=(write+1)%delay[0].size();for(int c=0;c<2;c++){float raw=std::isfinite(ptr[c][i])?ptr[c][i]:0;inputMagnitude=std::max(inputMagnitude,std::abs(raw));in[c][i]=raw*trim;rawAligned.setSample(c,i,delay[c][read]);wetAligned.setSample(c,i,delay[c+2][read]);delay[c][write]=raw;delay[c+2][write]=in[c][i];}write=read;
+   visualFast=std::max(inputMagnitude,visualFast*visualRelease);visualSlow=visualAverage*visualSlow+(1-visualAverage)*inputMagnitude;
+   if(visualCooldown>0)--visualCooldown;
+   if(visualCooldown==0&&inputMagnitude>.03f&&visualFast>visualSlow*2.f+.03f){transientSerial.fetch_add(1,std::memory_order_relaxed);visualCooldown=int(sampleRate*.12);}
+  }
   float semitones=0;for(int i=0;i<n;i++)semitones=pitch.next();stretch.setTransposeSemitones(semitones);stretch.process(in,n,shiftedOut,n);
   for(int i=0;i<n;i++){float blend=layer.next();for(int c=0;c<2;c++)ptr[c][i]=wetAligned.getSample(c,i)*(1-blend)+shiftedOut[c][i]*blend;}
   core.process(ptr[0],ptr[1],n,settings);
@@ -37,7 +41,7 @@ void SauceProcessor::process(AudioBuffer<float>& b,bool hostBypass){ScopedNoDeno
    for(int c=0;c<2;c++){float limited=result[c]*(1-safe+safe*limiterGain);float x=limited*(1-bp)+rawAligned.getSample(c,i)*bp;ptr[c][i]=std::isfinite(x)?x:0;peak=std::max(peak,std::abs(ptr[c][i]));}
   }
  }
- outputPeak.store(peak,std::memory_order_relaxed);gainReduction.store(core.reductionDb,std::memory_order_relaxed);
+ inputPeak.store(visualFast,std::memory_order_relaxed);outputPeak.store(peak,std::memory_order_relaxed);gainReduction.store(core.reductionDb,std::memory_order_relaxed);
 }
 void SauceProcessor::getStateInformation(MemoryBlock& d){auto xml=state.copyState().createXml();copyXmlToBinary(*xml,d);}
 void SauceProcessor::setStateInformation(const void* d,int n){if(auto xml=getXmlFromBinary(d,n))if(xml->hasTagName(state.state.getType())){auto restored=ValueTree::fromXml(*xml);state.replaceState(restored);}}

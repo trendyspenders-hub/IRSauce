@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(IRSauce VERSION 0.3.0)
+project(IRSauce VERSION 0.4.0)
 set(CMAKE_CXX_STANDARD 17)
 include(FetchContent)
 FetchContent_Declare(JUCE GIT_REPOSITORY https://github.com/juce-framework/JUCE.git GIT_TAG 8.0.6 GIT_SHALLOW TRUE)
@@ -17,6 +17,8 @@ target_link_libraries(IRSauce PRIVATE SauceAssets juce::juce_audio_utils juce::j
 
 include(CTest)
 if(BUILD_TESTING)
+ add_executable(sauce_animation_tests tests/animation_test.cpp)
+ add_test(NAME sauce_animation COMMAND sauce_animation_tests)
  add_executable(sauce_core_tests tests/core_test.cpp)
  target_include_directories(sauce_core_tests PRIVATE vendor/signalsmith-stretch vendor/signalsmith-stretch/include)
  add_test(NAME sauce_core COMMAND sauce_core_tests)
