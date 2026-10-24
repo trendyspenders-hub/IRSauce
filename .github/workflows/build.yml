@@ -8,6 +8,7 @@ permissions:
   contents: read
 jobs:
   mac:
+    if: "!contains(github.event.head_commit.message, '[repackage]')"
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,16 +30,13 @@ jobs:
       - name: Create verified DMG
         run: bash scripts/create-dmg.sh
       - name: Validate Audio Unit
-        run: |
-          mkdir -p "$HOME/Library/Audio/Plug-Ins/Components"
-          ditto "build/IRSauce_artefacts/Release/AU/IRSauce.component" "$HOME/Library/Audio/Plug-Ins/Components/IRSauce.component"
-          codesign --force --deep --sign - "$HOME/Library/Audio/Plug-Ins/Components/IRSauce.component"
-          auval -v aufx IrSc IrAu > dist/auval.log 2>&1 || { cat dist/auval.log; exit 1; }
+        run: bash scripts/validate-au.sh "$PWD/build"
       - uses: actions/upload-artifact@v4
         with:
           name: IRSauce-Mac-Installer-unsigned
           path: dist/
   windows:
+    if: "!contains(github.event.head_commit.message, '[repackage]')"
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
