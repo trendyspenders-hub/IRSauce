@@ -8,7 +8,7 @@ This is a BUILD KIT. It does not already contain compiled Mac plug-ins or a .pkg
    Complete Apple's installation.
 3. Open Create_Mac_Installer.command. If it will not open, type bash followed by a space in Terminal, drag Create_Mac_Installer.command into the Terminal window, and press Return.
 4. Wait for the build and tests. The launcher will reveal:
-   dist/IRSauce-0.3.0-Mac-Installer.dmg
+   dist/IRSauce-0.4.0-Mac-Installer.dmg
 5. Open that DMG, then Install I.R.Sauce.pkg to install the AU and VST3 plug-ins. Your Mac may require administrator approval.
 6. Quit and reopen your DAW; scan for IRSauce.
 

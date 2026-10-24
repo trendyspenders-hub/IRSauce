@@ -1,4 +1,4 @@
-# I.R.Sauce — Backyard Smoker Beta 0.3
+# I.R.Sauce — Backyard Smoker Beta 0.4
 
 Native stereo DAW plug-in for macOS AU/VST3 and Windows VST3. The entire interface is an actual backyard smoker scene. All names, readouts, controls, bottle lettering and meter markings are real interface code over a text-free generated background.
 
@@ -34,7 +34,7 @@ Signalsmith stays active at zero layer mix to preserve timing. The plug-in repor
 
 ## Graphics
 
-The thermometer is an output level meter. Firebox ember animation follows Drive; chimney wisps follow Reverb Mix. They do not represent CPU temperature. Animation can be disabled; its preference is stored in the DAW session. The UI timer remains active for metering. Background food and coals are static imagery; ember particles and extra wisps move. Resizing preserves the scene's aspect ratio.
+Choose Animation: Off, Subtle or Full. Flames follow Drive and input level; coals react to transients; sauce drips follow global Mix; heat shimmer follows saturation; food steam follows reverb Mix and Size; the thermometer has a spring needle and held-peak marker; recipe changes briefly lift the lid; string lights glow slowly. Off stops decorative movement while functional meters remain active. Modes are stored in DAW state. All drawing runs on the UI thread; DSP supplies only bounded level/onset telemetry. These native overlays animate static smoker artwork; no video decoder is used. Resizing preserves the scene's aspect ratio.
 
 ## Engine provenance
 
