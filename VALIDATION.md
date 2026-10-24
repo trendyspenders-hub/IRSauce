@@ -12,15 +12,17 @@
 
 ## Build status
 
-Linux x86_64 VST3 and standalone: COMPLETE build and link passed. VST3 manifest generated successfully. Both CTest suites pass (2/2). Native editor rendered and inspected. This is not a Linux DAW host test.
-macOS Intel/Apple Silicon AU/VST3: NOT COMPILED in this session.
-Mac .pkg/DMG: GitHub build is being submitted; final status is reported separately.
-GitHub Mac workflow and auval: supplied; NOT RUN.
-Developer ID signing/notarization: NOT PERFORMED. Ad-hoc signing is part of the Mac packaging script.
+Mac universal AU/VST3: compiled successfully; 2/2 CTest suites passed on Apple Silicon. Both arm64 and x86_64 slices verified. Architecture-check argument order was corrected after the first packaging attempt.
+Mac package/DMG: built successfully; package payload, ad-hoc signatures, universal architectures and hdiutil checksums verified.
+AU validation: PASSED after refreshing AudioComponentRegistrar. The prior failure was component discovery before refresh.
+Windows x64 VST3: build and both CTest suites PASSED.
+Successful installer workflow: https://github.com/trendyspenders-hub/IRSauce/actions/runs/40122177636
+Audio build/test workflow: https://github.com/trendyspenders-hub/IRSauce/actions/runs/40121644137
+Developer ID signing/notarization: NOT PERFORMED. Bundles are ad-hoc signed; the installer is unsigned.
 
 ## Material limits
 
-This is a beta, not a radio/mastering certification or a listening-panel evaluation. No Mac DAW loading tests, host automation stress suite, pluginval, Apple auval, CPU profiling, long-session leak testing or listening assessment has been completed. VST3/AU support is a build target until validated on each platform.
+This is a beta, not a radio/mastering certification or a listening-panel evaluation. Apple auval passed. No representative Mac DAW session tests, host automation stress suite, pluginval, CPU profiling, long-session leak testing or listening assessment has been completed. VST3/AU support is a build target until validated on each platform.
 
 Pitch processing always runs and reports 5760 samples at 48 kHz with the current library preset (120 ms). This makes the beta better suited to mixing than live low-latency monitoring. Other sample rates have their own reported latency.
 

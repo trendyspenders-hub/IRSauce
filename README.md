@@ -2,20 +2,16 @@
 
 Native stereo DAW plug-in for macOS AU/VST3 and Windows VST3. The entire interface is an actual backyard smoker scene. All names, readouts, controls, bottle lettering and meter markings are real interface code over a text-free generated background.
 
-## Getting the Mac version
+## Mac installer
 
-This download contains source and a Mac build-and-package launcher, **not a precompiled Mac installer**. No Mac runner was available during this session. The Linux compile and runtime tests do not establish Mac compatibility.
+A compiled universal Mac DMG is available from the successful installer workflow:
+https://github.com/trendyspenders-hub/IRSauce/actions/runs/40122177636
 
-1. Extract the ZIP into a writable local folder.
-2. Install Apple's Command Line Tools if needed: in Terminal run `xcode-select --install`, finish that installation, then continue.
-3. Open `Create_Mac_Installer.command` on the Mac. If Finder will not execute it, run `bash ` followed by dragging the file into Terminal and pressing Return.
-4. The launcher obtains a SHA-256-verified CMake if needed, downloads JUCE, builds Intel + Apple Silicon bundles, runs the core and processor tests, and creates a `.pkg`, then wraps it in verified `dist/IRSauce-0.3.0-Mac-Installer.dmg`. First build needs internet, several minutes and free disk space.
-5. Open the resulting `.dmg`, then `Install I.R.Sauce.pkg` to install the AU, VST3 and plug-ins. The package installs system-wide and macOS will ask for administrator authorization.
-6. Restart the DAW and scan plugins. AU is intended for Logic/GarageBand; VST3 is intended for compatible hosts. Pro Tools AAX is not included.
+Open the DMG, then Install I.R.Sauce.pkg. It installs AU and VST3 system-wide. There is no standalone application and no AAX/Pro Tools target. Restart the DAW and rescan. The package is unsigned, plug-in bundles use ad-hoc signatures, and Apple notarization has not been performed.
 
-The package is unsigned; plug-in bundles receive local ad-hoc signatures. Developer ID signing and Apple notarization have not been performed. macOS may block the package until it is reviewed in Privacy & Security. The launcher never disables Gatekeeper or modifies system security settings.
+The universal AU/VST3 build and both CTest suites passed on Mac. Apple's auval passed after refreshing registration. Package payload/architecture/signature checks and DMG hdiutil verification passed. Intel slices are present but Intel runtime/DAW tests remain separate work. Windows x64 VST3 build and CTest also passed.
 
-A GitHub Actions workflow is included to produce the same `.dmg` on a Mac runner once this project is placed in its own repository. It has not been run for this project.
+For local source builds, run Create_Mac_Installer.command on a Mac with Apple Command Line Tools. Branded installation, user and audit PDFs are in Docs/.
 
 ## Audio controls
 
