@@ -35,6 +35,10 @@ This beta package is unsigned and not notarized. Bundles have local ad-hoc signa
 No system-security settings are changed by this installer.
 TXT
 /usr/bin/ditto "$ROOT/LICENSE" "$WORK/content/Source License.txt"
+/usr/bin/ditto "$ROOT/THIRD_PARTY_NOTICES.md" "$WORK/content/Third Party Notices.md"
+if [[ -d "$ROOT/Docs" ]]; then
+ /usr/bin/ditto "$ROOT/Docs" "$WORK/content/Guides"
+fi
 if [[ -f "$ROOT/Preview/IRSauce_Smoker_Native.jpg" ]]; then
  /usr/bin/ditto "$ROOT/Preview/IRSauce_Smoker_Native.jpg" "$WORK/content/I.R.Sauce Preview.jpg"
 fi

@@ -15,8 +15,14 @@ for SPEC in 'AU|IRSauce.component|Library/Audio/Plug-Ins/Components' 'VST3|IRSau
  [[ -d "$SOURCE" ]] || { echo "Missing built bundle: $SOURCE" >&2; exit 1; }
  EXECUTABLE="$SOURCE/Contents/MacOS/IRSauce"
  [[ -f "$EXECUTABLE" ]] || { echo "Missing executable: $EXECUTABLE" >&2; exit 1; }
- /usr/bin/lipo -verify_arch arm64 x86_64 "$EXECUTABLE"
+ /usr/bin/lipo "$EXECUTABLE" -verify_arch arm64 x86_64
  /usr/bin/ditto "$SOURCE" "$STAGE/$DEST/$BUNDLE"
+ NOTICE_DIR="$STAGE/$DEST/$BUNDLE/Contents/Resources/Licenses"
+ mkdir -p "$NOTICE_DIR"
+ /usr/bin/ditto "$ROOT/LICENSE" "$NOTICE_DIR/AGPL-3.0.txt"
+ /usr/bin/ditto "$ROOT/THIRD_PARTY_NOTICES.md" "$NOTICE_DIR/THIRD_PARTY_NOTICES.md"
+ /usr/bin/ditto "$ROOT/vendor/signalsmith-stretch/LICENSE.txt" "$NOTICE_DIR/Signalsmith-Stretch-MIT.txt"
+ /usr/bin/ditto "$ROOT/vendor/signalsmith-stretch/include/signalsmith-linear/LICENSE.txt" "$NOTICE_DIR/Signalsmith-Linear-MIT.txt"
  /usr/bin/codesign --force --deep --sign - "$STAGE/$DEST/$BUNDLE"
  /usr/bin/codesign --verify --deep --strict "$STAGE/$DEST/$BUNDLE"
 done

@@ -17,6 +17,13 @@ jobs:
         run: cmake --build build --config Release --parallel 2
       - name: Test
         run: ctest --test-dir build -C Release --output-on-failure
+      - name: Preserve tested Mac binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: IRSauce-Mac-Tested-Binaries
+          path: |
+            build/IRSauce_artefacts/Release/AU/
+            build/IRSauce_artefacts/Release/VST3/
       - name: Package Mac installer
         run: bash scripts/package-mac.sh "$PWD/build"
       - name: Create verified DMG
