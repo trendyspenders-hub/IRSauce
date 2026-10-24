@@ -5,11 +5,11 @@ Native stereo DAW plug-in for macOS AU/VST3 and Windows VST3. The entire interfa
 ## Mac installer
 
 A compiled universal Mac DMG is available from the successful installer workflow:
-https://github.com/trendyspenders-hub/IRSauce/actions/runs/40122177636
+https://github.com/trendyspenders-hub/IRSauce/actions/runs/40124147171
 
 Open the DMG, then Install I.R.Sauce.pkg. It installs AU and VST3 system-wide. There is no standalone application and no AAX/Pro Tools target. Restart the DAW and rescan. The package is unsigned, plug-in bundles use ad-hoc signatures, and Apple notarization has not been performed.
 
-The universal AU/VST3 build and both CTest suites passed on Mac. Apple's auval passed after refreshing registration. Package payload/architecture/signature checks and DMG hdiutil verification passed. Intel slices are present but Intel runtime/DAW tests remain separate work. Windows x64 VST3 build and CTest also passed.
+The universal AU/VST3 build and all three CTest suites passed on Mac. Apple's auval passed after refreshing registration. Package payload/architecture/signature checks and DMG hdiutil verification passed. Intel slices are present but Intel runtime/DAW tests remain separate work. Windows x64 VST3 build and CTest also passed.
 
 For local source builds, run Create_Mac_Installer.command on a Mac with Apple Command Line Tools. Branded installation, user and audit PDFs are in Docs/.
 
@@ -54,7 +54,7 @@ ctest --test-dir build -C Release --output-on-failure
 
 On Mac add `'-DCMAKE_OSX_ARCHITECTURES=arm64;x86_64' -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0` when configuring. On Windows use Visual Studio 2022 and add `-A x64`. Output is under `build/IRSauce_artefacts/Release/`.
 
-Earlier Linux x86_64 VST3 and development-only standalone builds complete successfully, and both CTest suites pass. See VALIDATION.md for the checks actually completed and material limitations.
+Earlier Linux x86_64 VST3 and development-only standalone builds complete successfully, and all three CTest suites pass. See VALIDATION.md for the checks actually completed and material limitations.
 
 ## Plug-in-only product
 The release intentionally contains no standalone application. Load IRSauce on a stereo audio track or bus in a compatible DAW. Mac package: AU + VST3. Windows: VST3. AAX and Pro Tools are not included.
